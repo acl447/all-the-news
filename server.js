@@ -24,7 +24,7 @@ app.use(express.static("public"));
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 //connect to the Mongo DB
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 //Routes
 
@@ -32,24 +32,29 @@ mongoose.connect(MONGODB_URI);
 app.get("/scrape", function (req, res) {
 
 
-    axios.get("http://digg.com/").then(function (response) {
+    axios.get("http://www.digg.com/").then(function (response) {
 
 
         let $ = cheerio.load(response.data);
 
-        //grab every h2 within an article tag, and do the following:
+        //Save an empty result object
+        let result = {};
+
+        //grab every h2 within an article tag
         $("article h2").each(function (i, element) {
 
-            //Save an empty result object
-            let result = {};
-
             //Add the text and href of every link, and save them as properties of the result
-            result.title = $(this)
+            result.headline = $(this)
                 .children("a")
                 .text();
             result.url = $(this)
                 .children("a")
                 .attr("href");
+            result.summary = $(this)
+                .children("a")
+                .text();
+
+
 
 
             //Create a new Article using the result object built from scraping
@@ -66,12 +71,17 @@ app.get("/scrape", function (req, res) {
 
         });
 
-        //Send a message to the client
-        res.send("Scrape complete");
 
     });
 
+
+
+    //Send a message to the client
+    res.send("Scrape complete");
+
 });
+
+
 
 //Route for getting all Articles from the db
 app.get("/articles", function (req, res) {
@@ -129,9 +139,6 @@ app.post("/articles/:id", function (req, res) {
             res.json(err);
 
         });
-
-
-
 });
 
 //Start the server
