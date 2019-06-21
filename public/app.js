@@ -7,3 +7,12 @@ $.getJSON("/articles", function(data) {
     }
 });
 
+//Whenever someone clicks a p tag
+$(document).on("click", "p", function() {
+    //Empty the notes from the note section
+    $("#notes").empty();
+    //Save the id from the p tag
+    let thisId = $(this).attr("data-id");
+
+    
+})

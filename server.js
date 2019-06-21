@@ -40,18 +40,22 @@ app.get("/scrape", function (req, res) {
         //Save an empty result object
         let result = {};
 
-        //grab every h2 within an article tag
-        $("article h2").each(function (i, element) {
+        //grab every div with a class of digg-story__content
+        $(".digg-story__content").each(function (i, element) {
 
             //Add the text and href of every link, and save them as properties of the result
             result.headline = $(this)
+                .children("header")
+                .children("h2")
                 .children("a")
                 .text();
             result.url = $(this)
+                .children("header")
+                .children("h2")
                 .children("a")
                 .attr("href");
             result.summary = $(this)
-                .children("a")
+                .children("div")
                 .text();
 
 
