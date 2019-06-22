@@ -1,5 +1,7 @@
 let express = require("express");
 
+let exphbs = require("express-handlebars");
+
 let logger = require("morgan");
 
 let mongoose = require("mongoose");
