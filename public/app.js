@@ -2,7 +2,7 @@
 $.getJSON("/articles", function (data) {
     console.log(data);
     // For each one
-    for (let i = 260; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
         // Display the apropos information on the page
         $("#articles").append("<p data-id='" + data[i]._id + "'> <strong>" + data[i].headline + "</strong> <br />" + data[i].summary + "<br />" + data[i].url + "</p>");
     }
