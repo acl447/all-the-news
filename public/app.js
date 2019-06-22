@@ -4,7 +4,7 @@ $.getJSON("/articles", function (data) {
     // For each one
     for (let i = 260; i < data.length; i++) {
         // Display the apropos information on the page
-        $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].headline + "<br />" + data[i].summary + "<br />" + data[i].url + "</p>");
+        $("#articles").append("<p data-id='" + data[i]._id + "'> <strong>" + data[i].headline + "</strong> <br />" + data[i].summary + "<br />" + data[i].url + "</p>");
     }
 });
 
@@ -36,7 +36,7 @@ $(document).on("click", "p", function () {
             $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
 
             //A button to submit a new note, with the id of the article saved to it
-            $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
+            $("#notes").append("<button data-id='" + data._id + "' id='savenote' style='margin-right:20px'>Save Note</button>");
 
             //A button to delete the note, with the id of the article saved to it
             $("#notes").append("<button data-id='" + data._id + "' id='deletenote'>Delete Note</button>")
