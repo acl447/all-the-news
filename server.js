@@ -154,6 +154,30 @@ app.post("/articles/:id", function (req, res) {
         });
 });
 
+//Route for deleting an Article's associated Note
+app.delete("/articles/:id", function (req, res) {
+
+    //Pass the req.body to the entry
+    db.Note.deleteOne(req.body)
+        .then(function (dbNote) {
+
+            //If a Note was deleted successfully, find one Article with an _id equal to req.params.id.
+            //Update the Article to not include the deleted Note 
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, {new: true});
+        })
+        .then(function (dbArticle) {
+
+            //If able to successfully delete note from Article, return updated Article
+            res.json(dbArticle);
+        })
+        .catch(function (err) {
+
+            //If an error occurred, send it to the client
+            res.json(err);
+
+        });
+});
+
 //Start the server
 app.listen(PORT, function () {
 
