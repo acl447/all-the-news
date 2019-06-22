@@ -1,5 +1,7 @@
 let express = require("express");
 
+let logger = require("morgan");
+
 let mongoose = require("mongoose");
 
 let axios = require("axios");
@@ -13,6 +15,11 @@ let PORT = process.env.PORT || 3000;
 
 //initialize Express
 let app = express();
+
+//Configure middleware
+
+//Use morgan logger for logging requests
+app.use(logger("dev"));
 
 //parse request body as JSON
 app.use(express.urlencoded({ extended: true }));
@@ -47,7 +54,7 @@ app.get("/scrape", function (req, res) {
         $(".digg-story__content").each(function (i, element) {
 
             //Add the text and href of every link, and the text of every article description,
-            // and save them as properties of the result
+            // and save them as properties of the result object
             result.headline = $(element)
                 .children("header")
                 .children("h2")
@@ -62,9 +69,6 @@ app.get("/scrape", function (req, res) {
                 .children("div")
                 .text();
 
-
-
-
             //Create a new Article using the result object built from scraping
             db.Article.create(result)
                 .then(function (dbArticle) {
@@ -76,16 +80,15 @@ app.get("/scrape", function (req, res) {
                     console.log(err);
 
                 });
-
         });
 
 
+
+
+        //Send a message to the client
+        res.send("Scrape complete");
+
     });
-
-
-
-    //Send a message to the client
-    res.send("Scrape complete");
 
 });
 
@@ -96,15 +99,15 @@ app.get("/articles", function (req, res) {
 
 
     //Grab every document in the Articles collection
-    db.Article.find()
+    db.Article.find({})
         .then(function (dbArticle) {
 
+            //If able to successfully find Articles, send them back to the client
             res.json(dbArticle);
-
-
         })
         .catch(function (err) {
-
+            
+            //If an error occurred, send it to the client
             res.json(err);
         });
 });
@@ -116,11 +119,13 @@ app.get("/articles/:id", function (req, res) {
         .populate("note")
         .then(function (dbArticle) {
 
+            //If able to successfully find an Article with the given id, send it back to the client
             res.json(dbArticle);
 
         })
         .catch(function (err) {
 
+            //If an error occurred, send it to the client
             res.json(err);
         });
 });
