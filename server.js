@@ -21,6 +21,7 @@ app.use(express.json());
 //Make public a static folder
 app.use(express.static("public"));
 
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 //connect to the Mongo DB
@@ -37,24 +38,27 @@ app.get("/scrape", function (req, res) {
 
         let $ = cheerio.load(response.data);
 
+        console.log(response.data);
+
         //Save an empty result object
         let result = {};
 
         //grab every div with a class of digg-story__content
         $(".digg-story__content").each(function (i, element) {
 
-            //Add the text and href of every link, and save them as properties of the result
-            result.headline = $(this)
+            //Add the text and href of every link, and the text of every article description,
+            // and save them as properties of the result
+            result.headline = $(element)
                 .children("header")
                 .children("h2")
                 .children("a")
                 .text();
-            result.url = $(this)
+            result.url = $(element)
                 .children("header")
                 .children("h2")
                 .children("a")
                 .attr("href");
-            result.summary = $(this)
+            result.summary = $(element)
                 .children("div")
                 .text();
 
@@ -92,7 +96,7 @@ app.get("/articles", function (req, res) {
 
 
     //Grab every document in the Articles collection
-    db.Article.find({})
+    db.Article.find()
         .then(function (dbArticle) {
 
             res.json(dbArticle);
